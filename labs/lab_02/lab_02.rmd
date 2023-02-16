@@ -71,7 +71,7 @@ Climate_courses <- umd_courses %>%
 **A3.** The Maryland Institute for for Applied Environmental Health is interesting because given its name, I would think there would be more classes with "Climate" in the title, but the department only offers 3 courses.
 
 **Q4.** Using the Maryland campaign expenses data, change the datatype of the expenditure_date column so that it is a date and not a chr. Then create a new column for the month based on expenditure_date. Then write code that shows total amount spent each month by Wes Moore's committee (you'll need to search the data to find the exact name). Write a sentence describing the pattern of spending over time.
-**A4.**
+**A4.** There were significant jumps in campaign spending in May and June, as well as August-October.
 
 ```{r}
 maryland_expenses_dates <- maryland_expenses %>% mutate(expenditure_date=mdy(expenditure_date))
@@ -82,7 +82,12 @@ head(maryland_expenses_dates)
 ```{r}
 maryland_expenses_dates %>% 
   mutate(month = floor_date(expenditure_date, "month")) %>% 
-  filter(payee_name == "Moore Wes For Maryland ")
+  filter(payee_name == "Moore  Wes For Maryland") %>% 
+  group_by(month) %>% 
+  summarise(
+    total_amount = sum(amount)
+  ) %>% 
+  arrange(desc(month))
 
 ```
   group_by(month) %>% 
@@ -93,13 +98,16 @@ maryland_expenses_dates %>%
 
 
 **Q5.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab.
-**A5.** What terms had the highest number of seats?
+**A5.** What term offered the most classes with 200 or more seats?
+202108
 
 ```{r}
 term_seats <- umd_courses %>% 
-  group(term) %>% 
+  filter(seats>=200) %>% 
+  group_by(term) %>% 
   summarise(
     total_amount = sum(seats)
-  )
+  ) %>% 
+  arrange(desc(total_amount))
   
 ```
