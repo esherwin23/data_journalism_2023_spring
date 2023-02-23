@@ -67,7 +67,7 @@ A3.Examples of vendor names that are similar that should be combined into one ar
 2. A & I INC, A&I  INC and A&I INC.
 3. AMERICAN DESIGN ASSOCIATE and AMERICAN DESIGN ASSOCIATES
 
-I would use code to detect the common elements between each name within the column and mutate them into one standard name using case_when. I would also clean up any zip codes with only 4 digits by adding a 0 at the beginning through a case_when statement that uses str functions. 
+I would use code to detect the common elements between each name within the column and mutate them into one standard name using case_when. I would also clean up any zip codes with only 4 digits by adding a 0 at the beginning through a case_when statement that uses str functions so that they all end up with 5 digits. 
 
 ```{r}
 capital_project_umd <- payments %>% 
