@@ -1,6 +1,6 @@
 ---
 title: "Reverse Engineering Project"
-author: "Student names here"
+author: "Sherwin Esguerra, Kiersten Hacker"
 date: "Date here"
 output:
   html_document:
@@ -18,14 +18,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction 
 
-In this notebook, we are reverse engineering the story, [STORY NAME](STORY URL)
+In this notebook, we are reverse engineering the story, [Nearly 250 women have been fatally shot by police since 2015](https://www.washingtonpost.com/graphics/2020/investigations/police-shootings-women/)
 
 ## Load libraries
 
 Loading required libraries for this analysis.
 
 ```{r echo=FALSE, message=FALSE}
-
+library(janitor)
+library(tidyverse)
 ```
 
 ## Load and Cleaning Data
@@ -34,7 +35,9 @@ In this section, describe the source of the data, write a basic data dictionary 
 
 ```{r}
 # Load required data
-
+fatal_police_shooting_data <- read_csv("data/fatal-police-shootings-data.csv")
+fatal_police_shooting_agencies <- read_csv("data/fatal-police-shootings-agencies.csv") 
+glimpse(fatal_police_shooting_data)
 # Path to data should be loaded from folder "data" i.e. read_csv("data/name_of_data.csv")
 
 # Clean required data and prepare for analysis if needed. 
@@ -47,15 +50,73 @@ In this notebook, we are reverse engineering five sentences from the story.
 
 ### Sentence 1
 
-* **Sentence text**: [Paste in sentence to engineer here]
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Sentence text**: “About 31 percent, or 77, of the 247 women fatally shot by police since 2015 had mental health issues, compared to 22 percent of the 5,362 men killed.”
+* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?] After analyzing the data, we found that the total counts for women and men fatally shot and their repsective population percentage comparisons differed from the original story. 121 women with mental illness were shot compared to a total of 366 women fatally shot, which is about 33.06%. For men, 1592 with mental illness were shot out of 7864 total men, which is about 20.24%. However, we realize these changes may be due to updates to the data following the story's release.
 
 ```{r}
-# Put code to reverse engineer sentence here
+# Code to find the total number of women fatally shot since 2015
+women_shot_by_police <- fatal_police_shooting_data %>% 
+  filter(gender == "female") %>% 
+  summarise(
+    count=n()
+  )
 
 # Display results of code below this codeblock
-
+head(women_shot_by_police)
 ```
+
+```{r}
+# Code to find the total number of women with mental illness who were fatally shot
+women_mental_illness <- fatal_police_shooting_data %>% 
+  filter(was_mental_illness_related == TRUE & gender == "female") %>% 
+  summarise(
+    count=n()
+  )
+
+head(women_mental_illness)
+```
+
+```{r}
+women_mental_illness_pct <- women_mental_illness %>%
+  mutate(
+    pct_mentally_ill = women_mental_illness/women_shot_by_police*100
+  )
+head(women_mental_illness_pct)
+```
+
+
+```{r}
+# Code to find the total number of men shot by police
+men_shot_by_police <- fatal_police_shooting_data %>% 
+  filter(gender == "male") %>% 
+  summarise(
+    count=n()
+  )
+head(men_shot_by_police)
+```
+
+```{r}
+# Code to find the number of men with mental illness who were shot by police
+men_mental_illness <- fatal_police_shooting_data %>% 
+  filter(was_mental_illness_related == TRUE & gender == "male") %>% 
+  summarise(
+    count=n()
+  )
+
+head(men_mental_illness)
+```
+
+
+```{r}
+# Find the percentage of men with mental illness shot
+men_mental_illness_pct <- men_mental_illness %>% 
+  mutate(
+    pct_mentally_ill = men_mental_illness / men_shot_by_police*100
+  )
+
+head(men_mental_illness_pct)
+```
+
 
 ### Sentence 2
 
