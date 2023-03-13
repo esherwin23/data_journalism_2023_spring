@@ -61,6 +61,8 @@ women_shot_by_police <- fatal_police_shooting_data %>%
     count=n()
   )
 
+women_shot_count <- 366
+
 # Display results of code below this codeblock
 head(women_shot_by_police)
 ```
@@ -120,38 +122,120 @@ head(men_mental_illness_pct)
 
 ### Sentence 2
 
-* **Sentence text**: [Paste in sentence to engineer here]
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Sentence text**: [Crenshaw said Black women’s deaths also may be dismissed as “collateral damage” if they are killed while police are pursuing someone else. Twenty of the 247 women were killed in that kind of situation, analysis shows. In 12 of those 20 shootings, police said the women killed were caught in crossfire or shot accidentally.]
+* **Analysis summary**: [We were able to confirm that 20 women were killed caught in the crossfire or shot accidentally using a filter that accounts for women who were unarmed as well as shot accidentally. However, it is hard to confirm the second statistic, 12 out of 2020, since it is based on what police say about these incidents.]
 
 ```{r}
 # Put code to reverse engineer sentence here
+women_shot <- fatal_police_shooting_data %>% 
+  filter(gender == "female")
 
 # Display results of code below this codeblock
+women_shot
+```
+```{r}
+# filter for women shot who were unarmed and accidentally shot
+women_crossfire <- women_shot %>% 
+  filter(armed_with == "unarmed" & threat_type == "accident") %>% 
+  summarise(
+    count_crossfire = n()
+  )
 
+women_crossfire
 ```
 
 ### Sentence 3
 
-* **Sentence text**: [Paste in sentence to engineer here]
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Sentence text**: [Since 2015, police have killed 26 unarmed women, including Taylor. Of those, 14 were White, seven were Black, four were Hispanic and one’s race was unknown. While about twice as many White women were shot and killed as Black women, White women account for five times the Black female population.]
+* **Analysis summary**: [The total number of unarmed women killed by police has risen to 33 since the publication of the story. However, using U.S. census data about female populations, we were able to validate the fact that White women account for five times the Black female population.]
 
 ```{r}
 # Put code to reverse engineer sentence here
-
+women_shot_by_race <- women_shot %>% 
+  filter(armed_with == "unarmed") %>% 
+  group_by(race) %>% 
+  summarise(
+    count_race = n()
+  )
 # Display results of code below this codeblock
+women_shot_by_race
+```
+```{r}
+#find the number of white women and black women in the population
+
+#female population based on total of 334485017 and the percentage of female of 50.5% according to US census data
+female_population <- 334485017*0.505
+
+#find the total population of black women based on the percentages
+black_female_pop <-female_population*0.136
+
+#find the total population of white women based on the percentages
+white_female_pop <- female_population*0.758 
+
+#divide the number of white women by the number of black women to check if white make up about 5 times the black female population
+white_women_comp_black_women <- white_female_pop/black_female_pop
 
 ```
 
 ### Sentence 4
 
-* **Sentence text**: [Paste in sentence to engineer here]
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Sentence text**: [Since 2015, Black women have accounted for less than 1 percent of the overall fatal shootings in cases where race was known. But within this small subset, Black women, who are 13 percent of the female population, account for 20 percent of the women shot and killed and 28 percent of the unarmed deaths.]
+* **Analysis summary**: [We were able to confirm that black women account for less than 1 percent of overall cases where race was known. We were also able to verify that black women are about 13.6% of the female population. However, they only account for about 18% of women shot and killed. Additionally, black women only 14% of unarmed deaths, which is about half of what the story stated.
 
 ```{r}
-# Put code to reverse engineer sentence here
-
+# Find all cases where race was known
+shootings_race_known <- fatal_police_shooting_data %>% 
+  filter(!is.na(race)) %>% 
+  group_by(race) %>% 
+  summarise(
+    count_race = n()
+  )
 # Display results of code below this codeblock
+shootings_race_known
+```
+```{r}
+#Find incidents where black women were shot
+black_women_shot <- fatal_police_shooting_data %>% 
+  filter(race=="B" & gender == "female") %>% 
+  summarise(
+    count_black_women_shot = n()
+  )
+black_women_shout_count<- 69
+black_women_shot
 
+```
+
+```{r}
+#total for number of cases where race was known
+shootings_race_total <- fatal_police_shooting_data %>% 
+  filter(!is.na(race)) %>% 
+  summarise(
+    count_races_known = n()
+  )
+shootings_race_total
+
+#percentage of black women compared to all cases where race was known
+black_women_comp_all_races<-69/7135
+
+#black women compared to female population
+black_female_pop_perc<-black_female_pop/female_population
+
+```
+```{r}
+#black women shot compared to all women shot and killed
+blk_women_shot_perc <- black_women_shot_count/women_shot_count
+
+#find the total of all cases where someone shot was unarmed
+total_unarmed_shot <- fatal_police_shooting_data %>% 
+  filter(armed_with == "unarmed") %>% 
+  summarise(
+    count_unarmed_shot = n()
+  )
+unarmed_shot_count <- 466
+total_unarmed_shot
+
+#black women shot compared to all unarmed who were shot
+blk_women_comp_unarmed<- black_women_shot_count/unarmed_shot_count
 ```
 
 ### Sentence 5
@@ -165,5 +249,3 @@ head(men_mental_illness_pct)
 # Display results of code below this codeblock
 
 ```
-
--30-
