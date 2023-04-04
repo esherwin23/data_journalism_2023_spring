@@ -27,6 +27,7 @@ Loading required libraries for this analysis.
 ```{r echo=FALSE, message=FALSE}
 library(janitor)
 library(tidyverse)
+library(lubridate)
 ```
 
 ## Load and Cleaning Data
@@ -180,7 +181,7 @@ white_women_comp_black_women <- white_female_pop/black_female_pop
 ### Sentence 4
 
 * **Sentence text**: [Since 2015, Black women have accounted for less than 1 percent of the overall fatal shootings in cases where race was known. But within this small subset, Black women, who are 13 percent of the female population, account for 20 percent of the women shot and killed and 28 percent of the unarmed deaths.]
-* **Analysis summary**: [We were able to confirm that black women account for less than 1 percent of overall cases where race was known. We were also able to verify that black women are about 13.6% of the female population. However, they only account for about 18% of women shot and killed. Additionally, black women only 14% of unarmed deaths, which is about half of what the story stated.
+* **Analysis summary**: [We were able to confirm that black women account for less than 1 percent of overall cases where race was known. We were also able to verify that black women are about 13.6% of the female population. However, they only account for about 18% of women shot and killed. Additionally, black women only 14% of unarmed deaths, which is about half of what the story stated.r
 
 ```{r}
 # Find all cases where race was known
@@ -200,7 +201,7 @@ black_women_shot <- fatal_police_shooting_data %>%
   summarise(
     count_black_women_shot = n()
   )
-black_women_shout_count<- 69
+black_women_shot_count<- 69
 black_women_shot
 
 ```
@@ -240,12 +241,26 @@ blk_women_comp_unarmed<- black_women_shot_count/unarmed_shot_count
 
 ### Sentence 5
 
-* **Sentence text**: [Paste in sentence to engineer here]
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Sentence text**: [The starkest difference between women and men is the rate: Women account for about half the population, but 4 percent of the killings. Of those fatally shot every year, about 44 have been women.]
+* **Analysis summary**: [We can confirm that the mean number of women shot per year was about 45, with 2018 and 2021 being possible outliers, having 52 and 56 women shot respectively. Additionally, we found that the percentage of women shot and killed was about 4.4%, which aligns pretty well with the story, but we are aware updated data could be the cause of the discrepancy.]
 
 ```{r}
 # Put code to reverse engineer sentence here
+women_shot_count <- 366
+women_shot_count/8269*100
+total_perc_women_shot <- 4.42617
 
+fatal_police_shootings_years <- fatal_police_shooting_data %>% 
+  mutate(year = year(date))
+
+fatal_police_shootings_years %>%
+  filter(gender == "female") %>%
+  group_by (year) %>%
+  summarise (
+    count_id = n(),
+  )
+
+mean_women_shot = (42+40+45+52+43+38+56+44)/8
 # Display results of code below this codeblock
 
 ```
