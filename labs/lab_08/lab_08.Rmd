@@ -147,7 +147,7 @@ pg_calls_with_acs5 <- pg_overdose_call_zips %>% left_join(median_income, by=c('z
 pg_calls_with_acs5 %>% 
   ggplot(aes(x=median_income, y=total_calls))+
   geom_point(size=2)+
-  geom_text(aes(label = zipcode, vjust = -0.5, check_overlap = TRUE))
+  geom_text(aes(label = zipcode, vjust = -0.5, check_overlap = TRUE))+
   labs(
     title = "Lower Median Income Might Correlate with More Overdoses",
     x = "total calls",
