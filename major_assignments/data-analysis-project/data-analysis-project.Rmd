@@ -1,0 +1,35 @@
+---
+title: "data-analysis-project"
+output: html_document
+date: "2023-04-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+```
+
+## Milestone 2
+
+Exploratory analysis of the Spotify and Youtube data: The data set has 28 columns and 20718 rows. The Spotify and Youtube data is easy to distinguish from each other, and the Youtube streaming data is easy to understnad. This can help us answer our questions about Youtube engagement and licensed content.
+
+One limitation I can notice is that some of the songs that fall under an artist's most popular songs are feautres of said artist on another song. This can be kind of confusing, but we might be able to work around it using filters once we start more analysis. However, this data is also helpful for answering our question about how collaborations affect an artist's popularity. One code we would need to make note of is 'key,' which denotes pitch notation but we need to find a way to make it easily apparent what the pitch is rather than just seeing a number.
+
+```{r cars}
+spotify_youtube <- read_csv("data/Spotify_Youtube.csv") %>% 
+  clean_names() %>% 
+  mutate(duration_secs = duration_ms/1000,
+         duration_mins = duration_ms/60000)
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
