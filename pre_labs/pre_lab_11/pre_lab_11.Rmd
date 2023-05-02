@@ -274,7 +274,12 @@ That worked, but it also exposed a couple of things, as that Warning message ind
 **Task** Run the following code in the gray-colored codeblock below to get rid of releases without dates and trim the leading spaces. Just for fun, we'll convert the dates into actual dates, too:
 
 ```{r}
-releases <- osp_results %>% html_elements('li.listing-item') %>% html_text() %>% as_tibble() %>% separate(value, c('date', 'title'), sep=":") %>% drop_na(title) %>% mutate(title = str_squish(title), date = mdy(date))
+releases <- osp_results %>% 
+  html_elements('li.listing-item') %>% 
+  html_text() %>% as_tibble() %>% 
+  separate(value, c('date', 'title'), sep=":") %>% 
+  drop_na(title) %>% 
+  mutate(title = str_squish(title), date = mdy(date))
 ```
 
 And now you have the data.
