@@ -75,7 +75,7 @@ sanction_trigrams
 
 **Q3.** Let's drop back down to more traditional text analysis - take the top trigram from Q2 and write code to see how many times it occurs in the text column in each fiscal year. What do you think the answer produced by your code suggests? What else could you do to try and clarify the most important reasons attorneys get sanctioned?
 
-**A3.** I think the answer produced by my code suggests that although it is the trigram that appears the most, it might not be the main reason most attorneys are sanctioned. I am also basing this off of the fact that 157 sanctions contain the phrase compared to a total of 1,015 sanctions. To clarify the most important reasons why attorneys get sanctioned, I could find some way to retrieve a combo of trigrams from each sanction. After looking through some sanctions, there are generally multiple reasons that can lead an attorney to be sanctioned, so basing importance off of just one trigram is not the most effective.
+**A3.** I think the answer produced by my code suggests that although it is the trigram that appears the most, it might not be the most important reason most attorneys are sanctioned. The trigram appears more in some years compared to others. For example, in 2021, 33 sanctions involved conduct involving dishonesty while only four cases pertained to it in 2015. Instead of searching for the trigram that appears most among all sanctions across all fiscal years, it might be better to look for trigrams that appear the most per fiscal year. This would involve breaking the data down into multiple dataframes based on year and then finding the top unique words among each year.
 
 ```{r}
 sanctions_fy <- md_attorney_sanctions %>% 
