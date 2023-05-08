@@ -7,6 +7,7 @@ date: "2023-04-14"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(tidyr)
 library(janitor)
 library(ggpubr)
 library(ggplot2)
@@ -97,3 +98,119 @@ streams_views %>%
   
 ```
 
+Question 3: How many videos with a high number of streams are coming from licensed content?
+
+Analysis: Most videos on YouTube with views over 500 million are coming from licensed content. However, we found that there are some outliers. About 54 videos were unlicensed and 15 channels posted unlicensed videos that were also classified as the official video for the track. Some channels say they are official, like Major Lazer Official, and then they only have unlicensed content on the platform. There is no one consistent theme or trend between the channels that have posted unlicensed content, though it seems like some of them are from countries outside of the U.S. or rappers and DJs. Redbox also posted unlicensed videos, which is interesting coming from a company even though it is not as popular anymore. It seems like some channels are definitely repurposing content from an unverified user, like WORLDSTARHIPHOP or perhaps other content is remixes or live performances in the case of DJs. In doing pivot wider, we can filter for licensed and unlicensed content as well as official videos and view the total number of views for each sorted by channel.
+
+```{r}
+##filter to create a new dataframe with YouTube videos that have over 500 million views
+youtube_high_views <- spotify_youtube %>%
+  filter(views > 500000000)
+
+##trying to count how many licensed videos artists have
+youtube_high_views %>%
+  group_by(artist) %>%
+  summarise (
+    count_licensed = n()
+  ) %>%
+  arrange(desc(count_licensed))
+
+##filter for videos that are not licensed
+youtube_high_views %>%
+  filter(licensed == FALSE) 
+
+##finding the amount of views for videos that are licensed and unlicensed and grouping it by channel
+youtube_high_views %>%
+  group_by(channel, licensed) %>%
+  summarize(total_views = sum(views)) %>% 
+  pivot_wider(names_from = licensed, values_from = total_views)
+
+##finding the number of views for videos that are unlicensed but it is the official video and grouping it by channel 
+youtube_high_views %>%
+  group_by(channel, official_video) %>%
+  summarize(total_views = sum(views)) %>% 
+  pivot_wider(names_from = official_video, values_from = total_views) %>% 
+  filter(`FALSE` > 0)
+```
+
+Question 4: How do collaborations or features on a song affect its popularity on Spotify and YouTube? What are the most popular collaborations?
+
+Analysis: Some artists definitely seem to be more successful with their songs that have collaborators on the track compared to songs where they are the sole artist. We were trying to do a similar analysis to the question above using pivot_wider to compare the number of streams for songs with a collaborator and without so we could see which artists would be best to collaborate with if you want your song to reach the most people. We ran into an error trying to use pivot wider in the end, so we will definitely need to brainstorm more solutions that will move us past this dead end before we complete more analysis. Either way, Post Malone is the only artist who had streams in the top 10 for both a single song and a collaboration. Mackelmore and Ryan Lewis were also in the top 10 highest number of streams for their collaborative songs, but fall behind for single songs. Also, we noticed a complication with the data when doing an analysis like this to answer the question because songs will appear twice under the different artists' names even though it is the same song. This can be seen especially with Mackelmore and Ryan Lewis since the song appears under Mackelmore, Ryan Lewis and Mackelmore and Ryan Lewis. Industry Baby and Levitating also appear twice, once under each artist's name, throwing off the top 10 most streamed collaborative songs.
+
+```{r}
+##filtering to create a new dataframe that only includes songs that have one or more artists featured on the track including the main artist
+song_features <- spotify_youtube %>%
+  filter(str_detect(track, 'feat.'))
+
+##sorting through the dataframe to find the artist who has the highest number of streams with a collaborator on their track
+song_features %>%
+  group_by(artist, stream) %>%
+  arrange(desc(stream))
+
+##filtering for tracks where there are no collaborators and grouping it by artist in the order of highest streams to lowest
+non_collabs <- spotify_youtube %>%
+  group_by(artist) %>%
+  filter(!str_detect(track,'feat.')) %>%
+  arrange(desc(stream))
+
+##attempting to use pivot_wider to compare the amount of streams for tracks with collaborators and tracks without.
+spotify_youtube %>%
+  group_by(artist) %>%
+  mutate(total_stream = sum(stream)) %>% 
+  pivot_wider(names_from = track, values_from = total_stream) %>%
+  filter(str_detect(track,'feat.'))
+
+```
+
+Question 5: Do singles or songs from full albums get more streams? What about views on YouTube? Which artists have more success with singles compared to full albums and vice versa?
+
+Analysis: More well known American artists were in the top 10 highest views for YouTube videos coming from songs that were part of a full album. A lot of the singles were also songs that had collaborations between artists. None of the artists who had the top number of streams for singles also had the top number of streams for songs on a full album. Perhaps collaborative songs also perform better when they are a single rather than featured in an album. The highest number of streams for a song that came from an album was The Weeknd's "Blinding Lights" which had about a billion more streams than Halsey's "Closer" which is the top single with the most amount of streams. The top videos with the highest views for singles and regular album tracks were also much different than the results from the Spotify streams in these categories. What this could tell us is that maybe jsut because a song is popular does not mean the video to go with it will be as well. There are deeper visual aspects and social trends that may contribute more to the number of views on YouTube. 
+
+```{r}
+##filtering for singles and arranging them from highest number of streams to lowest
+singles_streams <- spotify_youtube %>%
+  filter(album_type == "single") %>%
+  arrange(desc(stream))
+ 
+##filtering for tracks from full albums and arranging them from highest number of streams to lowest 
+full_album_streams <- spotify_youtube %>%
+  filter(album_type == "album") %>%
+  arrange(desc(stream)) 
+
+##counting the number of singles and full album tracks each artist has
+artist_singles_count <- spotify_youtube %>%
+  filter(album_type == "single") %>%
+  group_by(artist) %>%
+  summarise (
+    count_track = n()
+  ) %>%
+  arrange(desc(count_track))
+
+artist_album_tracks_count <- spotify_youtube %>%
+  filter(album_type == "album") %>%
+  group_by(artist) %>%
+  summarise (
+    count_track = n()
+  ) %>%
+  arrange(desc(count_track))
+
+##counting the number of single videos and album track videos an artist has
+singles_vids <- youtube_high_views %>%
+filter(album_type == "single") %>%
+  group_by(artist) %>%
+  summarise (
+    count_title = n()
+  ) %>%
+  arrange(desc(count_title))
+
+album_track_vids <- youtube_high_views %>%
+  filter(album_type == "album") %>%
+  group_by(artist) %>%
+  summarise (
+    count_title = n()
+  ) %>%
+  arrange(desc(count_title))
+```
+
+**Our most newsworthy finding**
+So far, we think our most newsworthy piece of analysis comes from either the licensed and unlicensed content on YouTube or the analysis of artist collaborations. We think that once we are able to complete more analysis on artist collaborations, it would make for a really interesting article about who to feature on your track if you want your song to amass a lot of streams on Spotify. From what we have seen, there have not been any articles with a central focus along the lines of "Here's who to make songs with if you want them to take off," which we think could be an impactful finding in and around the music community. Also, with the consumption of video on the rise between TikTok and YouTube, we think it is newsworthy to question why certain channels have unlicensed content or how their videos can be official but unlicensed. As we learn more about how to navigate social media spaces in terms of regulating content and copyright, perhaps these findings can provide more insight for those who make social media rules or who work for the social media companies and are trying to limit unlicensed content. 
