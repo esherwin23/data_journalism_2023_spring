@@ -249,10 +249,9 @@ non_collabs <- spotify_youtube %>%
 
 ##attempting to use pivot_wider to compare the amount of streams for tracks with collaborators and tracks without.
 spotify_youtube %>%
-  group_by(artist) %>%
-  mutate(total_stream = sum(stream)) %>% 
-  pivot_wider(names_from = track, values_from = total_stream) %>%
-  filter(str_detect(track,'feat.'))
+  group_by(track) %>%
+  summarize(total_stream = sum(stream)) %>% 
+  pivot_wider(names_from = track, values_from = total_stream)
 
 ```
 
